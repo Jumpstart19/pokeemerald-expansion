@@ -141,6 +141,8 @@ static void Task_PushBoulder(u8);
 static bool8 PushBoulder_Start(struct Task *, struct ObjectEvent *, struct ObjectEvent *);
 static bool8 PushBoulder_Move(struct Task *, struct ObjectEvent *, struct ObjectEvent *);
 static bool8 PushBoulder_End(struct Task *, struct ObjectEvent *, struct ObjectEvent *);
+static bool8 SlipBoulder_Move(struct Task *, struct ObjectEvent *, struct ObjectEvent *);
+static bool8 SlipBoulder_ContinueSlipOrEnd(struct Task *, struct ObjectEvent *, struct ObjectEvent *);
 
 static void DoPlayerMatJump(void);
 static void DoPlayerAvatarSecretBaseMatJump(u8);
@@ -327,11 +329,22 @@ static bool8 (*const sArrowWarpMetatileBehaviorChecks2[])(u8) =  //Duplicate of 
     [DIR_EAST - 1]  = MetatileBehavior_IsEastArrowWarp,
 };
 
+enum PushBoulderState
+{
+    STATE_PUSH_BOULDER_INIT,
+    STATE_PUSH_BOULDER_MOVE,
+    STATE_SLIP_BOULDER_SLIP_OR_END,
+    STATE_SLIP_BOULDER_MOVE,
+    STATE_PUSH_BOULDER_END
+};
+
 static bool8 (*const sPushBoulderFuncs[])(struct Task *, struct ObjectEvent *, struct ObjectEvent *) =
 {
-    PushBoulder_Start,
-    PushBoulder_Move,
-    PushBoulder_End,
+    [STATE_PUSH_BOULDER_INIT]           = PushBoulder_Start,
+    [STATE_PUSH_BOULDER_MOVE]           = PushBoulder_Move,
+    [STATE_SLIP_BOULDER_SLIP_OR_END]    = SlipBoulder_ContinueSlipOrEnd,
+    [STATE_SLIP_BOULDER_MOVE]           = SlipBoulder_Move,
+    [STATE_PUSH_BOULDER_END]            = PushBoulder_End
 };
 
 static bool8 (*const sPlayerAvatarSecretBaseMatJump[])(struct Task *, struct ObjectEvent *) =
@@ -1847,6 +1860,45 @@ static bool8 PushBoulder_Move(struct Task *task, struct ObjectEvent *player, str
         PlaySE(SE_M_STRENGTH);
         task->tState++;
     }
+    return FALSE;
+}
+
+static bool8 SlipBoulder_Move(struct Task *task, struct ObjectEvent *player, struct ObjectEvent *boulder)
+{
+    if (ObjectEventIsHeldMovementActive(boulder))
+        ObjectEventClearHeldMovementIfFinished(boulder);
+
+    if (!ObjectEventIsMovementOverridden(boulder))
+    {
+        ObjectEventClearHeldMovementIfFinished(boulder);
+        ObjectEventSetHeldMovement(boulder, GetSlideMovementAction((u8)task->tDirection));
+        task->tState = STATE_SLIP_BOULDER_SLIP_OR_END;
+    }
+    
+    return FALSE;
+}
+
+static bool8 SlipBoulder_ContinueSlipOrEnd(struct Task *task, struct ObjectEvent *player, struct ObjectEvent *boulder)
+{
+    if (!ObjectEventClearHeldMovementIfFinished(boulder))
+        return FALSE;
+
+    s16 x = boulder->currentCoords.x;
+    s16 y = boulder->currentCoords.y;
+    s16 x0 = x;
+    s16 y0 = y;
+
+    MoveCoords(boulder->movementDirection, &x, &y);
+
+    if (GetCollisionAtCoords(&gObjectEvents[task->tBoulderObjId], x, y, (u8)task->tDirection) == COLLISION_NONE
+    && MetatileBehavior_IsNonAnimDoor(MapGridGetMetatileBehaviorAt(x, y)) == FALSE
+    && MetatileBehavior_IsIce(MapGridGetMetatileBehaviorAt(x0, y0)))
+    {
+        task->tState++;
+        return TRUE;
+    }
+
+    task->tState = STATE_PUSH_BOULDER_END;
     return FALSE;
 }
 

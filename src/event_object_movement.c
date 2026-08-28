@@ -2966,6 +2966,10 @@ static void RemoveObjectEventIfOutsideView(struct ObjectEvent *objectEvent)
     if (objectEvent->initialCoords.x >= left && objectEvent->initialCoords.x <= right
      && objectEvent->initialCoords.y >= top && objectEvent->initialCoords.y <= bottom)
         return;
+        
+    // Prevent offscreen boulders from being removed
+    if ((FlagGet(FLAG_DONT_REMOVE_OFFSCREEN_BOULDER) && objectEvent->graphicsId == OBJ_EVENT_GFX_PUSHABLE_BOULDER))
+        return;
 
     // Overworld Wild Ecnounters need to be set as offscreen in order to determine whether
     // their despawn animation should play.
