@@ -531,6 +531,7 @@ static const struct SpritePalette sObjectEventSpritePalettes[] = {
     {gObjectEventPal_Lugia,                 OBJ_EVENT_PAL_TAG_LUGIA},
     {gObjectEventPal_RubySapphireBrendan,   OBJ_EVENT_PAL_TAG_RS_BRENDAN},
     {gObjectEventPal_RubySapphireMay,       OBJ_EVENT_PAL_TAG_RS_MAY},
+    {gObjectEventPal_IceMagmaBoulder,       OBJ_EVENT_PAL_TAG_ICE_MAGMA_BOULDER},
 #if IS_FRLG
     {gObjectEventPal_PlayerFrlg,            OBJ_EVENT_PAL_TAG_PLAYER_RED},
     {gObjectEventPal_PlayerReflectionFrlg,  OBJ_EVENT_PAL_TAG_PLAYER_RED_REFLECTION},
@@ -2966,9 +2967,12 @@ static void RemoveObjectEventIfOutsideView(struct ObjectEvent *objectEvent)
     if (objectEvent->initialCoords.x >= left && objectEvent->initialCoords.x <= right
      && objectEvent->initialCoords.y >= top && objectEvent->initialCoords.y <= bottom)
         return;
-        
+
     // Prevent offscreen boulders from being removed
-    if ((FlagGet(FLAG_DONT_REMOVE_OFFSCREEN_BOULDER) && objectEvent->graphicsId == OBJ_EVENT_GFX_PUSHABLE_BOULDER))
+    if (FlagGet(FLAG_DONT_REMOVE_OFFSCREEN_BOULDER)
+     && (objectEvent->graphicsId == OBJ_EVENT_GFX_PUSHABLE_BOULDER
+     || objectEvent->graphicsId == OBJ_EVENT_GFX_ICE_BOULDER
+     || objectEvent->graphicsId == OBJ_EVENT_GFX_MAGMA_BOULDER))
         return;
 
     // Overworld Wild Ecnounters need to be set as offscreen in order to determine whether

@@ -358,6 +358,14 @@ static const struct SpriteFrameImage sPicTable_PushableBoulder[] = {
     obj_frame_tiles(gObjectEventPic_PushableBoulder),
 };
 
+static const struct SpriteFrameImage sPicTable_IceBoulder[] = {
+    obj_frame_tiles(gObjectEventPic_IceBoulder),
+};
+
+static const struct SpriteFrameImage sPicTable_MagmaBoulder[] = {
+    obj_frame_tiles(gObjectEventPic_MagmaBoulder),
+};
+
 static const struct SpriteFrameImage sPicTable_MrBrineysBoat[] = {
     overworld_frame(gObjectEventPic_MrBrineysBoat, 4, 4, 0),
     overworld_frame(gObjectEventPic_MrBrineysBoat, 4, 4, 1),
