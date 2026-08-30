@@ -122,11 +122,27 @@
 #define METATILE_BuildingFrlg_PCOn   0x063
 
 // gTileset_Cave
+#define METATILE_Cave_Cave_Water_E                       0x9A1
+#define METATILE_Cave_Cave_Water_ES                      0x9A5
+#define METATILE_Cave_Cave_Water_ESW                     0x9AD
+#define METATILE_Cave_Cave_Water_EW                      0x9A9
+#define METATILE_Cave_Cave_Water_N                       0x9A0
+#define METATILE_Cave_Cave_Water_NE                      0x9A2
+#define METATILE_Cave_Cave_Water_NES                     0x9A6
+#define METATILE_Cave_Cave_Water_NESW                    0x9AE
+#define METATILE_Cave_Cave_Water_NEW                     0x9AA
+#define METATILE_Cave_Cave_Water_NS                      0x9A4
+#define METATILE_Cave_Cave_Water_NSW                     0x9AC
+#define METATILE_Cave_Cave_Water_NW                      0x9A8
+#define METATILE_Cave_Cave_Water_S                       0x9A3
+#define METATILE_Cave_Cave_Water_SW                      0x9AB
+#define METATILE_Cave_Cave_Water_W                       0x9A7
 #define METATILE_Cave_CrackedFloor                       0x82F
 #define METATILE_Cave_CrackedFloor_Hole                  0x806
 #define METATILE_Cave_EntranceCover                      0x829
 #define METATILE_Cave_Floor_Ledge_Bottom                 0x8E1
 #define METATILE_Cave_Floor_Ledge_Top                    0x8D1
+#define METATILE_Cave_Ice_Platform                       0x9AF
 #define METATILE_Cave_RockBarrier_Bottom                 0x917
 #define METATILE_Cave_RockBarrier_Top                    0x907
 #define METATILE_Cave_SealedChamberBraille_Mid           0x835
