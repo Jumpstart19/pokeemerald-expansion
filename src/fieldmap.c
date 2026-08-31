@@ -458,6 +458,12 @@ void MapGridSetMetatileIdAt(s32 x, s32 y, u16 metatile)
     }
 }
 
+void MapGridSetMetatileIdAndElevationAt(s32 x, s32 y, u16 metatile, u32 elevation)
+{
+    if (AreCoordsWithinMapGridBounds(x, y))
+        gBackupMapLayout.map[x + y * gBackupMapLayout.width] = (metatile & MAPGRID_METATILE_ID_MASK) | ((elevation << MAPGRID_ELEVATION_SHIFT) & MAPGRID_ELEVATION_MASK);
+}
+
 void MapGridSetMetatileEntryAt(s32 x, s32 y, u16 metatile)
 {
     if (AreCoordsWithinMapGridBounds(x, y))

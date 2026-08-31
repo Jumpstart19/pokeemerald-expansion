@@ -32,6 +32,7 @@
 #include "constants/field_effects.h"
 #include "constants/items.h"
 #include "constants/metatile_behaviors.h"
+#include "constants/metatile_labels.h"
 #include "constants/moves.h"
 #include "constants/songs.h"
 #include "constants/trainer_types.h"
@@ -136,7 +137,7 @@ static void PlayerApplyTileForcedMovement(u8 metatileBehavior);
 
 static void HideShowWarpArrow(struct ObjectEvent *);
 
-static void StartStrengthAnim(u8, enum Direction);
+static void StartStrengthAnim(u8, enum Direction, u32);
 static void Task_PushBoulder(u8);
 static bool8 PushBoulder_Start(struct Task *, struct ObjectEvent *, struct ObjectEvent *);
 static bool8 PushBoulder_Move(struct Task *, struct ObjectEvent *, struct ObjectEvent *);
@@ -1042,12 +1043,15 @@ static bool8 TryPushBoulder(s16 x, s16 y, enum Direction direction)
     if (FlagGet(FLAG_SYS_USE_STRENGTH))
     {
         u8 objectEventId = GetObjectEventIdByXY(x, y);
+        u32 gfxId = gObjectEvents[objectEventId].graphicsId;
+        s16 x0 = x;
+        s16 y0 = y;
 
         if (objectEventId != OBJECT_EVENTS_COUNT
-         && (gObjectEvents[objectEventId].graphicsId == OBJ_EVENT_GFX_PUSHABLE_BOULDER
-         || gObjectEvents[objectEventId].graphicsId == OBJ_EVENT_GFX_PUSHABLE_BOULDER_FRLG
-         || gObjectEvents[objectEventId].graphicsId == OBJ_EVENT_GFX_ICE_BOULDER
-         || gObjectEvents[objectEventId].graphicsId == OBJ_EVENT_GFX_MAGMA_BOULDER))
+         && (gfxId == OBJ_EVENT_GFX_PUSHABLE_BOULDER
+         || gfxId == OBJ_EVENT_GFX_PUSHABLE_BOULDER_FRLG
+         || gfxId == OBJ_EVENT_GFX_ICE_BOULDER
+         || gfxId == OBJ_EVENT_GFX_MAGMA_BOULDER))
         {
             x = gObjectEvents[objectEventId].currentCoords.x;
             y = gObjectEvents[objectEventId].currentCoords.y;
@@ -1055,7 +1059,18 @@ static bool8 TryPushBoulder(s16 x, s16 y, enum Direction direction)
             if (GetCollisionAtCoords(&gObjectEvents[objectEventId], x, y, direction) == COLLISION_NONE
              && MetatileBehavior_IsNonAnimDoor(MapGridGetMetatileBehaviorAt(x, y)) == FALSE)
             {
-                StartStrengthAnim(objectEventId, direction);
+                StartStrengthAnim(objectEventId, direction, gfxId);
+                return TRUE;
+            }
+            else if (gfxId == OBJ_EVENT_GFX_ICE_BOULDER
+                  && (MetatileBehavior_IsDeepOrOceanWater(MapGridGetMetatileBehaviorAt(x, y))
+                  && MapGridGetElevationAt(x0, y0) == ELEVATION_DEFAULT)
+                  && MetatileBehavior_IsNonAnimDoor(MapGridGetMetatileBehaviorAt(x, y)) == FALSE)
+            {
+                MapGridSetMetatileIdAndElevationAt(x, y, METATILE_Cave_Ice_Platform, ELEVATION_DEFAULT);
+                DrawWholeMapView();
+                PlaySE(SE_ICE_CRACK);
+                StartStrengthAnim(objectEventId, direction, gfxId);
                 return TRUE;
             }
         }
@@ -1815,13 +1830,15 @@ static void HideShowWarpArrow(struct ObjectEvent *objectEvent)
 #define tState        data[0]
 #define tBoulderObjId data[1]
 #define tDirection    data[2]
+#define tGfxId        data[3]
 
-static void StartStrengthAnim(u8 objectEventId, enum Direction direction)
+static void StartStrengthAnim(u8 objectEventId, enum Direction direction, u32 objectEventGfxId)
 {
     u8 taskId = CreateTask(Task_PushBoulder, 0xFF);
 
     gTasks[taskId].tBoulderObjId = objectEventId;
     gTasks[taskId].tDirection = direction;
+    gTasks[taskId].tGfxId = objectEventGfxId;
     Task_PushBoulder(taskId);
 }
 
@@ -1895,9 +1912,21 @@ static bool8 SlipBoulder_ContinueSlipOrEnd(struct Task *task, struct ObjectEvent
     MoveCoords(boulder->movementDirection, &x, &y);
 
     if (GetCollisionAtCoords(&gObjectEvents[task->tBoulderObjId], x, y, (u8)task->tDirection) == COLLISION_NONE
-    && MetatileBehavior_IsNonAnimDoor(MapGridGetMetatileBehaviorAt(x, y)) == FALSE
-    && MetatileBehavior_IsIce(MapGridGetMetatileBehaviorAt(x0, y0)))
+     && MetatileBehavior_IsNonAnimDoor(MapGridGetMetatileBehaviorAt(x, y)) == FALSE
+     && MetatileBehavior_IsIce(MapGridGetMetatileBehaviorAt(x0, y0)))
     {
+        task->tState++;
+        return TRUE;
+    }
+    else if (task->tGfxId == OBJ_EVENT_GFX_ICE_BOULDER
+          && (MetatileBehavior_IsDeepOrOceanWater(MapGridGetMetatileBehaviorAt(x, y))
+          && MapGridGetElevationAt(x0, y0) == ELEVATION_DEFAULT)
+          && MetatileBehavior_IsNonAnimDoor(MapGridGetMetatileBehaviorAt(x, y)) == FALSE
+          && MetatileBehavior_IsIce(MapGridGetMetatileBehaviorAt(x0, y0)))
+    {
+        MapGridSetMetatileIdAndElevationAt(x, y, METATILE_Cave_Ice_Platform, ELEVATION_DEFAULT);
+        DrawWholeMapView();
+        PlaySE(SE_ICE_CRACK);
         task->tState++;
         return TRUE;
     }
@@ -1925,6 +1954,7 @@ static bool8 PushBoulder_End(struct Task *task, struct ObjectEvent *player, stru
 #undef tState
 #undef tBoulderObjId
 #undef tDirection
+#undef tGfxId
 
 /* Some field effect */
 
