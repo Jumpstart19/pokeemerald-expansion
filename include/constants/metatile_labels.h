@@ -134,6 +134,7 @@
 #define METATILE_Cave_Cave2_Water_NS                     0x9B4
 #define METATILE_Cave_Cave2_Water_NSW                    0x9BC
 #define METATILE_Cave_Cave2_Water_NW                     0x9B8
+#define METATILE_Cave_Cave2_Water_None                   0x9AF
 #define METATILE_Cave_Cave2_Water_S                      0x9B3
 #define METATILE_Cave_Cave2_Water_SW                     0x9BB
 #define METATILE_Cave_Cave2_Water_W                      0x9B7
@@ -149,6 +150,7 @@
 #define METATILE_Cave_Cave3_Water_NS                     0x9C4
 #define METATILE_Cave_Cave3_Water_NSW                    0x9CC
 #define METATILE_Cave_Cave3_Water_NW                     0x9C8
+#define METATILE_Cave_Cave3_Water_None                   0x9BF
 #define METATILE_Cave_Cave3_Water_S                      0x9C3
 #define METATILE_Cave_Cave3_Water_SW                     0x9CB
 #define METATILE_Cave_Cave3_Water_W                      0x9C7
@@ -164,6 +166,7 @@
 #define METATILE_Cave_Cave4_Water_NS                     0x9D4
 #define METATILE_Cave_Cave4_Water_NSW                    0x9DC
 #define METATILE_Cave_Cave4_Water_NW                     0x9D8
+#define METATILE_Cave_Cave4_Water_None                   0x9CF
 #define METATILE_Cave_Cave4_Water_S                      0x9D3
 #define METATILE_Cave_Cave4_Water_SW                     0x9DB
 #define METATILE_Cave_Cave4_Water_W                      0x9D7
@@ -179,6 +182,7 @@
 #define METATILE_Cave_Cave5_Water_NS                     0x9E4
 #define METATILE_Cave_Cave5_Water_NSW                    0x9EC
 #define METATILE_Cave_Cave5_Water_NW                     0x9E8
+#define METATILE_Cave_Cave5_Water_None                   0x9DF
 #define METATILE_Cave_Cave5_Water_S                      0x9E3
 #define METATILE_Cave_Cave5_Water_SW                     0x9EB
 #define METATILE_Cave_Cave5_Water_W                      0x9E7
@@ -194,7 +198,7 @@
 #define METATILE_Cave_Cave_Water_NS                      0x9A4
 #define METATILE_Cave_Cave_Water_NSW                     0x9AC
 #define METATILE_Cave_Cave_Water_NW                      0x9A8
-#define METATILE_Cave_Cave_Water_None                    0x811
+#define METATILE_Cave_Cave_Water_None                    0x99F
 #define METATILE_Cave_Cave_Water_S                       0x9A3
 #define METATILE_Cave_Cave_Water_SW                      0x9AB
 #define METATILE_Cave_Cave_Water_W                       0x9A7
@@ -203,7 +207,7 @@
 #define METATILE_Cave_EntranceCover                      0x829
 #define METATILE_Cave_Floor_Ledge_Bottom                 0x8E1
 #define METATILE_Cave_Floor_Ledge_Top                    0x8D1
-#define METATILE_Cave_Ice_Platform                       0x9AF
+#define METATILE_Cave_Ice_Platform                       0x99E
 #define METATILE_Cave_RockBarrier_Bottom                 0x917
 #define METATILE_Cave_RockBarrier_Top                    0x907
 #define METATILE_Cave_SealedChamberBraille_Mid           0x835
