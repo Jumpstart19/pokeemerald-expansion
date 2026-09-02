@@ -1038,6 +1038,9 @@ static bool8 ShouldJumpLedge(s16 x, s16 y, enum Direction direction)
         return FALSE;
 }
 
+#define METATILE_ICE_PLATFORM METATILE_Cave_Ice_Platform
+#define METATILE_MELTED_ICE METATILE_Cave_Water
+
 static bool8 TryPushBoulder(s16 x, s16 y, enum Direction direction)
 {
     if (FlagGet(FLAG_SYS_USE_STRENGTH))
@@ -1067,9 +1070,18 @@ static bool8 TryPushBoulder(s16 x, s16 y, enum Direction direction)
                   && MapGridGetElevationAt(x0, y0) == ELEVATION_DEFAULT)
                   && MetatileBehavior_IsNonAnimDoor(MapGridGetMetatileBehaviorAt(x, y)) == FALSE)
             {
-                MapGridSetMetatileIdAndElevationAt(x, y, METATILE_Cave_Ice_Platform, ELEVATION_DEFAULT);
+                MapGridSetMetatileIdAndElevationAt(x, y, METATILE_ICE_PLATFORM, ELEVATION_DEFAULT);
+                UpdateAdjacentMagmaTiles(x, y, FALSE);
                 DrawWholeMapView();
                 PlaySE(SE_ICE_CRACK);
+                StartStrengthAnim(objectEventId, direction, gfxId);
+                return TRUE;
+            }
+            else if (gfxId == OBJ_EVENT_GFX_MAGMA_BOULDER
+                  && (MetatileBehavior_IsDeepOrOceanWater(MapGridGetMetatileBehaviorAt(x, y))
+                  && MapGridGetElevationAt(x0, y0) == ELEVATION_DEFAULT)
+                  && MetatileBehavior_IsNonAnimDoor(MapGridGetMetatileBehaviorAt(x, y)) == FALSE)
+            {
                 StartStrengthAnim(objectEventId, direction, gfxId);
                 return TRUE;
             }
@@ -1915,6 +1927,14 @@ static bool8 SlipBoulder_ContinueSlipOrEnd(struct Task *task, struct ObjectEvent
      && MetatileBehavior_IsNonAnimDoor(MapGridGetMetatileBehaviorAt(x, y)) == FALSE
      && MetatileBehavior_IsIce(MapGridGetMetatileBehaviorAt(x0, y0)))
     {
+        if (task->tGfxId == OBJ_EVENT_GFX_MAGMA_BOULDER)
+        {
+            MapGridSetMetatileIdAndElevationAt(x0, y0, METATILE_MELTED_ICE, ELEVATION_SURF);
+            UpdateAdjacentMagmaTiles(x0, y0, TRUE);
+            DrawWholeMapView();
+            PlaySE(SE_PUDDLE);
+        }
+
         task->tState++;
         return TRUE;
     }
@@ -1924,11 +1944,27 @@ static bool8 SlipBoulder_ContinueSlipOrEnd(struct Task *task, struct ObjectEvent
           && MetatileBehavior_IsNonAnimDoor(MapGridGetMetatileBehaviorAt(x, y)) == FALSE
           && MetatileBehavior_IsIce(MapGridGetMetatileBehaviorAt(x0, y0)))
     {
-        MapGridSetMetatileIdAndElevationAt(x, y, METATILE_Cave_Ice_Platform, ELEVATION_DEFAULT);
+        MapGridSetMetatileIdAndElevationAt(x, y, METATILE_ICE_PLATFORM, ELEVATION_DEFAULT);
+        UpdateAdjacentMagmaTiles(x, y, FALSE);
         DrawWholeMapView();
         PlaySE(SE_ICE_CRACK);
         task->tState++;
         return TRUE;
+    }
+    else if (task->tGfxId == OBJ_EVENT_GFX_MAGMA_BOULDER
+          && MetatileBehavior_IsIce(MapGridGetMetatileBehaviorAt(x0, y0)))
+    {
+        MapGridSetMetatileIdAndElevationAt(x0, y0, METATILE_MELTED_ICE, ELEVATION_SURF);
+        UpdateAdjacentMagmaTiles(x0, y0, TRUE);
+        DrawWholeMapView();
+        PlaySE(SE_PUDDLE);
+
+        if (MetatileBehavior_IsDeepOrOceanWater(MapGridGetMetatileBehaviorAt(x, y))
+         && MetatileBehavior_IsNonAnimDoor(MapGridGetMetatileBehaviorAt(x, y)) == FALSE)
+        {
+            task->tState++;
+            return TRUE;
+        }
     }
 
     task->tState = STATE_PUSH_BOULDER_END;
@@ -1944,6 +1980,7 @@ static bool8 PushBoulder_End(struct Task *task, struct ObjectEvent *player, stru
         ObjectEventClearHeldMovementIfFinished(boulder);
         HandleBoulderFallThroughHole(boulder);
         HandleBoulderActivateVictoryRoadSwitch(boulder->currentCoords.x, boulder->currentCoords.y);
+        HandleMagmaBoulderCreatePlatform(boulder, task->tGfxId);
         gPlayerAvatar.preventStep = FALSE;
         UnlockPlayerFieldControls();
         DestroyTask(FindTaskIdByFunc(Task_PushBoulder));

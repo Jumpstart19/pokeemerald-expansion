@@ -6,6 +6,7 @@
 #include "fldeff_misc.h"
 #include "frontier_util.h"
 #include "menu.h"
+#include "metatile_behavior.h"
 #include "mirage_tower.h"
 #include "overworld.h"
 #include "palette.h"
@@ -14,10 +15,12 @@
 #include "secret_base.h"
 #include "trainer_hill.h"
 #include "tv.h"
+#include "constants/event_objects.h"
 #include "constants/rgb.h"
 #include "constants/layouts.h"
 #include "constants/metatile_behaviors.h"
 #include "constants/metatile_behaviors_frlg.h"
+#include "constants/metatile_labels.h"
 #include "wild_encounter.h"
 
 struct ConnectionFlags
@@ -1076,4 +1079,67 @@ bool32 AreCoordsInsideMap(u8 mapGroup, u8 mapNum, s16 x, s16 y)
 bool32 AreCoordsInsidePlayerMap(s16 x, s16 y)
 {
     return AreCoordsInsideMap(gSaveBlock1Ptr->location.mapGroup, gSaveBlock1Ptr->location.mapNum, x, y);
+}
+
+#define MAGMA_METATILE_NO_WATER METATILE_Cave_Cave2_Water_None
+
+u16 GetMagmaTileFor(s32 x, s32 y)
+{
+    u8 magmaTileNumber = 0;
+
+    if (MetatileBehavior_IsDeepOrOceanWater(MapGridGetMetatileBehaviorAt(x, y - 1))) // North tile
+        magmaTileNumber += 1;
+    if (MetatileBehavior_IsDeepOrOceanWater(MapGridGetMetatileBehaviorAt(x + 1, y))) // East tile
+        magmaTileNumber += 2;
+    if (MetatileBehavior_IsDeepOrOceanWater(MapGridGetMetatileBehaviorAt(x, y + 1))) // South tile
+        magmaTileNumber += 4;
+    if (MetatileBehavior_IsDeepOrOceanWater(MapGridGetMetatileBehaviorAt(x - 1, y))) // West tile
+        magmaTileNumber += 8;
+    
+    return MAGMA_METATILE_NO_WATER + magmaTileNumber;
+}
+
+#define NUM_MAGMA_TILES 16
+
+u16 GetMagmaTileAt(s32 x, s32 y)
+{
+    u16 magmaTile = MapGridGetMetatileIdAt(x, y);
+
+    for (u32 i = 0; i < NUM_MAGMA_TILES; i++)
+    {
+        if (magmaTile == MAGMA_METATILE_NO_WATER + i)
+            return magmaTile;
+    }
+
+    return NUM_METATILES_TOTAL + 1;
+}
+
+void UpdateAdjacentMagmaTiles(s32 x, s32 y, bool32 createdWater)
+{
+    u16 magmaTileToCheck;
+    u32 magmaTileShift[] = {1, 2, 4, 8}; // N, E, S, W
+    
+    if (createdWater == FALSE)
+    {
+        for (u32 i = 0; i < ARRAY_COUNT(magmaTileShift); i++)
+        {
+            magmaTileShift[i] *= -1;
+        }
+    }
+
+    magmaTileToCheck = GetMagmaTileAt(x, y - 1); // North tile
+    if (magmaTileToCheck < NUM_METATILES_TOTAL)
+        MapGridSetMetatileIdAt(x, y - 1, magmaTileToCheck + magmaTileShift[2]); // Change South portion of metatile
+
+    magmaTileToCheck = GetMagmaTileAt(x + 1, y); // East tile
+    if (magmaTileToCheck < NUM_METATILES_TOTAL)
+        MapGridSetMetatileIdAt(x + 1, y, magmaTileToCheck + magmaTileShift[3]); // Change West portion of metatile
+
+    magmaTileToCheck = GetMagmaTileAt(x, y + 1); // South tile
+    if (magmaTileToCheck < NUM_METATILES_TOTAL)
+        MapGridSetMetatileIdAt(x, y + 1, magmaTileToCheck + magmaTileShift[0]); // Change North portion of metatile
+
+    magmaTileToCheck = GetMagmaTileAt(x - 1, y); // West tile
+    if (magmaTileToCheck < NUM_METATILES_TOTAL)
+        MapGridSetMetatileIdAt(x - 1, y, magmaTileToCheck + magmaTileShift[1]); // Change East portion of metatile
 }

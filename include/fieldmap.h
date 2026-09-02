@@ -65,6 +65,9 @@ const struct MapConnection *GetMapConnectionAtPos(s16 x, s16 y);
 void MapGridSetMetatileImpassabilityAt(s32 x, s32 y, bool32 impassable);
 bool32 AreCoordsInsideMap(u8 mapGroup, u8 mapNum, s16 x, s16 y);
 bool32 AreCoordsInsidePlayerMap(s16 x, s16 y);
+u16 GetMagmaTileFor(s32 x, s32 y);
+u16 GetMagmaTileAt(s32 x, s32 y);
+void UpdateAdjacentMagmaTiles(s32 x, s32 y, bool32 createdWater);
 
 // field_region_map.c
 void FieldInitRegionMap(MainCallback callback);

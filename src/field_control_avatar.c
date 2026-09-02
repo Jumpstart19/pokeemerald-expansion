@@ -11,10 +11,12 @@
 #include "event_object_movement.h"
 #include "event_scripts.h"
 #include "fieldmap.h"
+#include "field_camera.h"
 #include "field_control_avatar.h"
 #include "field_message_box.h"
 #include "field_move.h"
 #include "field_effect.h"
+#include "field_effect_helpers.h"
 #include "field_player_avatar.h"
 #include "field_poison.h"
 #include "field_screen_effect.h"
@@ -39,9 +41,11 @@
 #include "wild_encounter_ow.h"
 #include "constants/event_bg.h"
 #include "constants/event_objects.h"
+#include "constants/field_effects.h"
 #include "constants/field_poison.h"
 #include "constants/layouts.h"
 #include "constants/metatile_behaviors.h"
+#include "constants/metatile_labels.h"
 #include "constants/songs.h"
 #include "constants/trainer_hill.h"
 
@@ -1426,5 +1430,28 @@ void HandleBoulderActivateVictoryRoadSwitch(u16 x, u16 y)
                 LockPlayerFieldControls();
             }
         }
+    }
+}
+
+void HandleMagmaBoulderCreatePlatform(struct ObjectEvent * object, u32 objectEventGfxId)
+{
+    u16 x, y;
+
+    x = object->currentCoords.x;
+    y = object->currentCoords.y;
+
+    if (MetatileBehavior_IsDeepOrOceanWater(MapGridGetMetatileBehaviorAt(x, y))
+     && objectEventGfxId == OBJ_EVENT_GFX_MAGMA_BOULDER)
+    {
+        PlaySE(SE_MAGMA_PLATFORM);
+        gFieldEffectArguments[0] = x;
+        gFieldEffectArguments[1] = y;
+        gFieldEffectArguments[2] = object->previousElevation;
+        gFieldEffectArguments[3] = gSprites[object->spriteId].oam.priority;
+        FieldEffectStart(FLDEFF_ASH_PUFF);
+        RemoveObjectEventByLocalIdAndMap(object->localId, gSaveBlock1Ptr->location.mapNum, gSaveBlock1Ptr->location.mapGroup);
+        MapGridSetMetatileIdAndElevationAt(x, y, GetMagmaTileFor(x, y), ELEVATION_DEFAULT);
+        UpdateAdjacentMagmaTiles(x, y, FALSE);
+        DrawWholeMapView();
     }
 }

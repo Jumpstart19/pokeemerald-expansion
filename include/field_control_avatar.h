@@ -37,6 +37,7 @@ void ClearPoisonStepCounter(void);
 void CancelSignPostMessageBox(struct FieldInput *input);
 void HandleBoulderFallThroughHole(struct ObjectEvent *object);
 void HandleBoulderActivateVictoryRoadSwitch(u16 x, u16 y);
+void HandleMagmaBoulderCreatePlatform(struct ObjectEvent * object, u32 objectEventGfxId);
 bool8 TryStartStepBasedScript(struct MapPosition *, u16, enum Direction);
 
 #define NOT_SIGNPOST 0
