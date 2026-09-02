@@ -1111,7 +1111,7 @@ u16 GetMagmaTileAt(s32 x, s32 y)
             return magmaTile;
     }
 
-    return NUM_METATILES_TOTAL + 1;
+    return NUM_METATILES_TOTAL;
 }
 
 void UpdateAdjacentMagmaTiles(s32 x, s32 y, bool32 createdWater)
