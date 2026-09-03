@@ -1926,6 +1926,11 @@ static bool8 SlipBoulder_ContinueSlipOrEnd(struct Task *task, struct ObjectEvent
             UpdateAdjacentMagmaTiles(x0, y0, TRUE);
             DrawWholeMapView();
             PlaySE(SE_PUDDLE);
+            gFieldEffectArguments[0] = x0;
+            gFieldEffectArguments[1] = y0;
+            gFieldEffectArguments[2] = boulder->previousElevation;
+            gFieldEffectArguments[3] = gSprites[boulder->spriteId].oam.priority;
+            FieldEffectStart(FLDEFF_JUMP_SMALL_SPLASH); 
         }
 
         task->tState++;
@@ -1951,6 +1956,11 @@ static bool8 SlipBoulder_ContinueSlipOrEnd(struct Task *task, struct ObjectEvent
         UpdateAdjacentMagmaTiles(x0, y0, TRUE);
         DrawWholeMapView();
         PlaySE(SE_PUDDLE);
+        gFieldEffectArguments[0] = x0;
+        gFieldEffectArguments[1] = y0;
+        gFieldEffectArguments[2] = boulder->previousElevation;
+        gFieldEffectArguments[3] = gSprites[boulder->spriteId].oam.priority;
+        FieldEffectStart(FLDEFF_JUMP_SMALL_SPLASH);
 
         if (MetatileBehavior_IsDeepOrOceanWater(MapGridGetMetatileBehaviorAt(x, y))
          && MetatileBehavior_IsNonAnimDoor(MapGridGetMetatileBehaviorAt(x, y)) == FALSE)
