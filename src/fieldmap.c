@@ -1081,7 +1081,7 @@ bool32 AreCoordsInsidePlayerMap(s16 x, s16 y)
     return AreCoordsInsideMap(gSaveBlock1Ptr->location.mapGroup, gSaveBlock1Ptr->location.mapNum, x, y);
 }
 
-#define MAGMA_METATILE_NO_WATER METATILE_Cave_Cave2_Water_None
+#define MAGMA_METATILE_NO_WATER METATILE_Cave_Cave2_NoWater
 
 u16 GetMagmaTileFor(s32 x, s32 y)
 {
