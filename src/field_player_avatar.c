@@ -141,9 +141,10 @@ static void StartStrengthAnim(u8, enum Direction, u32);
 static void Task_PushBoulder(u8);
 static bool8 PushBoulder_Start(struct Task *, struct ObjectEvent *, struct ObjectEvent *);
 static bool8 PushBoulder_Move(struct Task *, struct ObjectEvent *, struct ObjectEvent *);
-static bool8 PushBoulder_End(struct Task *, struct ObjectEvent *, struct ObjectEvent *);
-static bool8 SlipBoulder_Move(struct Task *, struct ObjectEvent *, struct ObjectEvent *);
+static bool8 IceBoulder_CreateInitialIcePlatform(struct Task *, struct ObjectEvent *, struct ObjectEvent *);
 static bool8 SlipBoulder_ContinueSlipOrEnd(struct Task *, struct ObjectEvent *, struct ObjectEvent *);
+static bool8 SlipBoulder_Move(struct Task *, struct ObjectEvent *, struct ObjectEvent *);
+static bool8 PushBoulder_End(struct Task *, struct ObjectEvent *, struct ObjectEvent *);
 
 static void DoPlayerMatJump(void);
 static void DoPlayerAvatarSecretBaseMatJump(u8);
@@ -333,6 +334,7 @@ static bool8 (*const sArrowWarpMetatileBehaviorChecks2[])(u8) =  //Duplicate of 
 enum PushBoulderState
 {
     STATE_PUSH_BOULDER_INIT,
+    STATE_ICE_BOULDER_INITIAL_PLATFORM,
     STATE_PUSH_BOULDER_MOVE,
     STATE_SLIP_BOULDER_SLIP_OR_END,
     STATE_SLIP_BOULDER_MOVE,
@@ -341,11 +343,12 @@ enum PushBoulderState
 
 static bool8 (*const sPushBoulderFuncs[])(struct Task *, struct ObjectEvent *, struct ObjectEvent *) =
 {
-    [STATE_PUSH_BOULDER_INIT]           = PushBoulder_Start,
-    [STATE_PUSH_BOULDER_MOVE]           = PushBoulder_Move,
-    [STATE_SLIP_BOULDER_SLIP_OR_END]    = SlipBoulder_ContinueSlipOrEnd,
-    [STATE_SLIP_BOULDER_MOVE]           = SlipBoulder_Move,
-    [STATE_PUSH_BOULDER_END]            = PushBoulder_End
+    [STATE_PUSH_BOULDER_INIT]               = PushBoulder_Start,
+    [STATE_ICE_BOULDER_INITIAL_PLATFORM]    = IceBoulder_CreateInitialIcePlatform,
+    [STATE_PUSH_BOULDER_MOVE]               = PushBoulder_Move,
+    [STATE_SLIP_BOULDER_SLIP_OR_END]        = SlipBoulder_ContinueSlipOrEnd,
+    [STATE_SLIP_BOULDER_MOVE]               = SlipBoulder_Move,
+    [STATE_PUSH_BOULDER_END]                = PushBoulder_End
 };
 
 static bool8 (*const sPlayerAvatarSecretBaseMatJump[])(struct Task *, struct ObjectEvent *) =
@@ -1059,28 +1062,11 @@ static bool8 TryPushBoulder(s16 x, s16 y, enum Direction direction)
             x = gObjectEvents[objectEventId].currentCoords.x;
             y = gObjectEvents[objectEventId].currentCoords.y;
             MoveCoords(direction, &x, &y);
-            if (GetCollisionAtCoords(&gObjectEvents[objectEventId], x, y, direction) == COLLISION_NONE
+            if ((GetCollisionAtCoords(&gObjectEvents[objectEventId], x, y, direction) == COLLISION_NONE
+             || ((gfxId == OBJ_EVENT_GFX_ICE_BOULDER || gfxId == OBJ_EVENT_GFX_MAGMA_BOULDER)
+             && MetatileBehavior_IsDeepOrOceanWater(MapGridGetMetatileBehaviorAt(x, y))
+             && MapGridGetElevationAt(x0, y0) == ELEVATION_DEFAULT))
              && MetatileBehavior_IsNonAnimDoor(MapGridGetMetatileBehaviorAt(x, y)) == FALSE)
-            {
-                StartStrengthAnim(objectEventId, direction, gfxId);
-                return TRUE;
-            }
-            else if (gfxId == OBJ_EVENT_GFX_ICE_BOULDER
-                  && (MetatileBehavior_IsDeepOrOceanWater(MapGridGetMetatileBehaviorAt(x, y))
-                  && MapGridGetElevationAt(x0, y0) == ELEVATION_DEFAULT)
-                  && MetatileBehavior_IsNonAnimDoor(MapGridGetMetatileBehaviorAt(x, y)) == FALSE)
-            {
-                MapGridSetMetatileIdAndElevationAt(x, y, METATILE_ICE_PLATFORM, ELEVATION_DEFAULT);
-                UpdateAdjacentMagmaTiles(x, y, FALSE);
-                DrawWholeMapView();
-                PlaySE(SE_ICE_CRACK);
-                StartStrengthAnim(objectEventId, direction, gfxId);
-                return TRUE;
-            }
-            else if (gfxId == OBJ_EVENT_GFX_MAGMA_BOULDER
-                  && (MetatileBehavior_IsDeepOrOceanWater(MapGridGetMetatileBehaviorAt(x, y))
-                  && MapGridGetElevationAt(x0, y0) == ELEVATION_DEFAULT)
-                  && MetatileBehavior_IsNonAnimDoor(MapGridGetMetatileBehaviorAt(x, y)) == FALSE)
             {
                 StartStrengthAnim(objectEventId, direction, gfxId);
                 return TRUE;
@@ -1870,6 +1856,26 @@ static bool8 PushBoulder_Start(struct Task *task, struct ObjectEvent *player, st
     return FALSE;
 }
 
+static bool8 IceBoulder_CreateInitialIcePlatform(struct Task *task, struct ObjectEvent *player, struct ObjectEvent *boulder)
+{
+    s16 x = boulder->currentCoords.x;
+    s16 y = boulder->currentCoords.y;
+
+    MoveCoords(task->tDirection, &x, &y);
+
+    if (task->tGfxId == OBJ_EVENT_GFX_ICE_BOULDER
+     && MetatileBehavior_IsDeepOrOceanWater(MapGridGetMetatileBehaviorAt(x, y)))
+    {
+        MapGridSetMetatileIdAndElevationAt(x, y, METATILE_ICE_PLATFORM, ELEVATION_DEFAULT);
+        UpdateAdjacentMagmaTiles(x, y, FALSE);
+        DrawWholeMapView();
+        PlaySE(SE_ICE_CRACK);
+    }
+
+    task->tState++;
+    return FALSE;
+}
+
 static bool8 PushBoulder_Move(struct Task *task, struct ObjectEvent *player, struct ObjectEvent *boulder)
 {
     if (ObjectEventIsHeldMovementActive(player))
@@ -1890,24 +1896,11 @@ static bool8 PushBoulder_Move(struct Task *task, struct ObjectEvent *player, str
         gFieldEffectArguments[2] = boulder->previousElevation;
         gFieldEffectArguments[3] = gSprites[boulder->spriteId].oam.priority;
         FieldEffectStart(FLDEFF_DUST);
-        PlaySE(SE_M_STRENGTH);
+        if (!IsSEPlaying())
+            PlaySE(SE_M_STRENGTH);
+        
         task->tState++;
     }
-    return FALSE;
-}
-
-static bool8 SlipBoulder_Move(struct Task *task, struct ObjectEvent *player, struct ObjectEvent *boulder)
-{
-    if (ObjectEventIsHeldMovementActive(boulder))
-        ObjectEventClearHeldMovementIfFinished(boulder);
-
-    if (!ObjectEventIsMovementOverridden(boulder))
-    {
-        ObjectEventClearHeldMovementIfFinished(boulder);
-        ObjectEventSetHeldMovement(boulder, GetSlideMovementAction((u8)task->tDirection));
-        task->tState = STATE_SLIP_BOULDER_SLIP_OR_END;
-    }
-    
     return FALSE;
 }
 
@@ -1968,6 +1961,21 @@ static bool8 SlipBoulder_ContinueSlipOrEnd(struct Task *task, struct ObjectEvent
     }
 
     task->tState = STATE_PUSH_BOULDER_END;
+    return FALSE;
+}
+
+static bool8 SlipBoulder_Move(struct Task *task, struct ObjectEvent *player, struct ObjectEvent *boulder)
+{
+    if (ObjectEventIsHeldMovementActive(boulder))
+        ObjectEventClearHeldMovementIfFinished(boulder);
+
+    if (!ObjectEventIsMovementOverridden(boulder))
+    {
+        ObjectEventClearHeldMovementIfFinished(boulder);
+        ObjectEventSetHeldMovement(boulder, GetSlideMovementAction((u8)task->tDirection));
+        task->tState = STATE_SLIP_BOULDER_SLIP_OR_END;
+    }
+    
     return FALSE;
 }
 
