@@ -1081,8 +1081,6 @@ bool32 AreCoordsInsidePlayerMap(s16 x, s16 y)
     return AreCoordsInsideMap(gSaveBlock1Ptr->location.mapGroup, gSaveBlock1Ptr->location.mapNum, x, y);
 }
 
-#define METATILE_CAVE_NORTH_LEDGE       METATILE_Cave_Cave1_Ledge_N
-#define METATILE_CAVE_NO_LEDGE          METATILE_Cave_Cave1_Ledge_None
 #define MAGMA_METATILE_NO_WATER         METATILE_Cave_Cave2_NoWater
 #define NUM_MAGMA_TILES                 16
 #define METATILE_MELTED_ICE_NO_LEDGE    METATILE_Cave_Water
@@ -1092,20 +1090,57 @@ bool32 AreCoordsInsidePlayerMap(s16 x, s16 y)
 
 void HandleSouthTileLedgeAt(s32 x, s32 y, bool32 createdWaterNorth)
 {
+    u16 southTile = MapGridGetMetatileIdAt(x, y);
+    u16 replaceTile;
+    
     if (createdWaterNorth)
     {
-        if (!MetatileBehavior_IsDeepOrOceanWater(MapGridGetMetatileBehaviorAt(x, y))
-         && !MetatileBehavior_IsIce(MapGridGetMetatileBehaviorAt(x, y))
-         && GetMagmaTileAt(x, y) == NUM_METATILES_TOTAL)
-            MapGridSetMetatileIdAndElevationAt(x, y, METATILE_CAVE_NORTH_LEDGE, ELEVATION_DEFAULT);
+        switch (southTile)
+        {
+        case METATILE_Cave_Cave1_Ledge_None:
+            replaceTile = METATILE_Cave_Cave1_Ledge_N;
+            break;
+        case METATILE_Cave_Cave2_Ledge_None:
+            replaceTile = METATILE_Cave_Cave2_Ledge_N;
+            break;
+        case METATILE_Cave_Cave3_Ledge_None:
+            replaceTile = METATILE_Cave_Cave3_Ledge_N;
+            break;
+        case METATILE_Cave_Cave4_Ledge_None:
+            replaceTile = METATILE_Cave_Cave4_Ledge_N;
+            break;
+        case METATILE_Cave_Cave5_Ledge_None:
+            replaceTile = METATILE_Cave_Cave5_Ledge_N;
+            break;
+        default:
+            return;
+        }
     }
     else
     {
-        if (!MetatileBehavior_IsDeepOrOceanWater(MapGridGetMetatileBehaviorAt(x, y))
-         && !MetatileBehavior_IsIce(MapGridGetMetatileBehaviorAt(x, y))
-         && GetMagmaTileAt(x, y) == NUM_METATILES_TOTAL)
-            MapGridSetMetatileIdAndElevationAt(x, y, METATILE_CAVE_NO_LEDGE, ELEVATION_DEFAULT);
+        switch (southTile)
+        {
+        case METATILE_Cave_Cave1_Ledge_N:
+            replaceTile = METATILE_Cave_Cave1_Ledge_None;
+            break;
+        case METATILE_Cave_Cave2_Ledge_N:
+            replaceTile = METATILE_Cave_Cave2_Ledge_None;
+            break;
+        case METATILE_Cave_Cave3_Ledge_N:
+            replaceTile = METATILE_Cave_Cave3_Ledge_None;
+            break;
+        case METATILE_Cave_Cave4_Ledge_N:
+            replaceTile = METATILE_Cave_Cave4_Ledge_None;
+            break;
+        case METATILE_Cave_Cave5_Ledge_N:
+            replaceTile = METATILE_Cave_Cave5_Ledge_None;
+            break;
+        default:
+            return;
+        }
     }
+
+    MapGridSetMetatileIdAndElevationAt(x, y, replaceTile, ELEVATION_DEFAULT);
 }
 
 u16 GetMagmaTileFor(s32 x, s32 y)
