@@ -1452,6 +1452,7 @@ void HandleMagmaBoulderCreatePlatform(struct ObjectEvent * object, u32 objectEve
         RemoveObjectEventByLocalIdAndMap(object->localId, gSaveBlock1Ptr->location.mapNum, gSaveBlock1Ptr->location.mapGroup);
         MapGridSetMetatileIdAndElevationAt(x, y, GetMagmaTileFor(x, y), ELEVATION_DEFAULT);
         UpdateAdjacentMagmaTiles(x, y, FALSE);
+        UpdateAdjacentWaterTiles(x, y);
         DrawWholeMapView();
     }
 }

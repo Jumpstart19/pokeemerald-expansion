@@ -123,14 +123,19 @@
 
 // gTileset_Cave
 #define METATILE_Cave_Cave1_Ledge_N                      0x9F9
+#define METATILE_Cave_Cave1_Ledge_None                   0x801
 #define METATILE_Cave_Cave1_NoWater                      0x99F
 #define METATILE_Cave_Cave2_Ledge_N                      0x9FA
+#define METATILE_Cave_Cave2_Ledge_None                   0x91B
 #define METATILE_Cave_Cave2_NoWater                      0x9AF
 #define METATILE_Cave_Cave3_Ledge_N                      0x9FB
+#define METATILE_Cave_Cave3_Ledge_None                   0x8DD
 #define METATILE_Cave_Cave3_NoWater                      0x9BF
 #define METATILE_Cave_Cave4_Ledge_N                      0x9FC
+#define METATILE_Cave_Cave4_Ledge_None                   0x8F5
 #define METATILE_Cave_Cave4_NoWater                      0x9CF
 #define METATILE_Cave_Cave5_Ledge_N                      0x9FD
+#define METATILE_Cave_Cave5_Ledge_None                   0x985
 #define METATILE_Cave_Cave5_NoWater                      0x9DF
 #define METATILE_Cave_CrackedFloor                       0x82F
 #define METATILE_Cave_CrackedFloor_Hole                  0x806

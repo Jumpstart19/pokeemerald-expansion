@@ -1041,9 +1041,6 @@ static bool8 ShouldJumpLedge(s16 x, s16 y, enum Direction direction)
         return FALSE;
 }
 
-#define METATILE_ICE_PLATFORM METATILE_Cave_Ice_Platform
-#define METATILE_MELTED_ICE METATILE_Cave_Water
-
 static bool8 TryPushBoulder(s16 x, s16 y, enum Direction direction)
 {
     if (FlagGet(FLAG_SYS_USE_STRENGTH))
@@ -1825,6 +1822,9 @@ static void HideShowWarpArrow(struct ObjectEvent *objectEvent)
 
 /* Strength */
 
+#define METATILE_ICE_PLATFORM   METATILE_Cave_Ice_Platform
+#define METATILE_MELTED_ICE     METATILE_Cave_Water
+
 #define tState        data[0]
 #define tBoulderObjId data[1]
 #define tDirection    data[2]
@@ -1868,6 +1868,8 @@ static bool8 IceBoulder_CreateInitialIcePlatform(struct Task *task, struct Objec
     {
         MapGridSetMetatileIdAndElevationAt(x, y, METATILE_ICE_PLATFORM, ELEVATION_DEFAULT);
         UpdateAdjacentMagmaTiles(x, y, FALSE);
+        UpdateAdjacentWaterTiles(x, y);
+        HandleSouthTileLedgeAt(x, y + 1, FALSE);
         DrawWholeMapView();
         PlaySE(SE_ICE_CRACK);
     }
@@ -1922,8 +1924,9 @@ static bool8 SlipBoulder_ContinueSlipOrEnd(struct Task *task, struct ObjectEvent
     {
         if (task->tGfxId == OBJ_EVENT_GFX_MAGMA_BOULDER)
         {
-            MapGridSetMetatileIdAndElevationAt(x0, y0, METATILE_MELTED_ICE, ELEVATION_SURF);
+            MapGridSetMetatileIdAndElevationAt(x0, y0, GetWaterTileFor(x0, y0), ELEVATION_SURF);
             UpdateAdjacentMagmaTiles(x0, y0, TRUE);
+            UpdateAdjacentWaterTiles(x0, y0);
             DrawWholeMapView();
             PlaySE(SE_PUDDLE);
             gFieldEffectArguments[0] = x0;
@@ -1944,6 +1947,8 @@ static bool8 SlipBoulder_ContinueSlipOrEnd(struct Task *task, struct ObjectEvent
     {
         MapGridSetMetatileIdAndElevationAt(x, y, METATILE_ICE_PLATFORM, ELEVATION_DEFAULT);
         UpdateAdjacentMagmaTiles(x, y, FALSE);
+        UpdateAdjacentWaterTiles(x, y);
+        HandleSouthTileLedgeAt(x, y + 1, FALSE);
         DrawWholeMapView();
         PlaySE(SE_ICE_CRACK);
         task->tState++;
@@ -1952,8 +1957,9 @@ static bool8 SlipBoulder_ContinueSlipOrEnd(struct Task *task, struct ObjectEvent
     else if (task->tGfxId == OBJ_EVENT_GFX_MAGMA_BOULDER
           && MetatileBehavior_IsIce(MapGridGetMetatileBehaviorAt(x0, y0)))
     {
-        MapGridSetMetatileIdAndElevationAt(x0, y0, METATILE_MELTED_ICE, ELEVATION_SURF);
+        MapGridSetMetatileIdAndElevationAt(x0, y0, GetWaterTileFor(x0, y0), ELEVATION_SURF);
         UpdateAdjacentMagmaTiles(x0, y0, TRUE);
+        UpdateAdjacentWaterTiles(x0, y0);
         DrawWholeMapView();
         PlaySE(SE_PUDDLE);
         gFieldEffectArguments[0] = x0;

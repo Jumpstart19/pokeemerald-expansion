@@ -1081,11 +1081,38 @@ bool32 AreCoordsInsidePlayerMap(s16 x, s16 y)
     return AreCoordsInsideMap(gSaveBlock1Ptr->location.mapGroup, gSaveBlock1Ptr->location.mapNum, x, y);
 }
 
-#define MAGMA_METATILE_NO_WATER METATILE_Cave_Cave2_NoWater
+#define METATILE_CAVE_NORTH_LEDGE       METATILE_Cave_Cave1_Ledge_N
+#define METATILE_CAVE_NO_LEDGE          METATILE_Cave_Cave1_Ledge_None
+#define MAGMA_METATILE_NO_WATER         METATILE_Cave_Cave2_NoWater
+#define NUM_MAGMA_TILES                 16
+#define METATILE_MELTED_ICE_NO_LEDGE    METATILE_Cave_Water
+#define METATILE_MELTED_ICE_NE_LEDGE    METATILE_Cave_Water_Ledge_NE
+#define METATILE_MELTED_ICE_NW_LEDGE    METATILE_Cave_Water_Ledge_NW
+#define NUM_WATER_TILES                 8
+
+void HandleSouthTileLedgeAt(s32 x, s32 y, bool32 createdWaterNorth)
+{
+    if (createdWaterNorth)
+    {
+        if (!MetatileBehavior_IsDeepOrOceanWater(MapGridGetMetatileBehaviorAt(x, y))
+         && !MetatileBehavior_IsIce(MapGridGetMetatileBehaviorAt(x, y))
+         && GetMagmaTileAt(x, y) == NUM_METATILES_TOTAL)
+            MapGridSetMetatileIdAndElevationAt(x, y, METATILE_CAVE_NORTH_LEDGE, ELEVATION_DEFAULT);
+    }
+    else
+    {
+        if (!MetatileBehavior_IsDeepOrOceanWater(MapGridGetMetatileBehaviorAt(x, y))
+         && !MetatileBehavior_IsIce(MapGridGetMetatileBehaviorAt(x, y))
+         && GetMagmaTileAt(x, y) == NUM_METATILES_TOTAL)
+            MapGridSetMetatileIdAndElevationAt(x, y, METATILE_CAVE_NO_LEDGE, ELEVATION_DEFAULT);
+    }
+}
 
 u16 GetMagmaTileFor(s32 x, s32 y)
 {
     u8 magmaTileNumber = 0;
+
+    HandleSouthTileLedgeAt(x, y + 1, FALSE);
 
     if (MetatileBehavior_IsDeepOrOceanWater(MapGridGetMetatileBehaviorAt(x, y - 1))) // North tile
         magmaTileNumber += 1;
@@ -1098,8 +1125,6 @@ u16 GetMagmaTileFor(s32 x, s32 y)
     
     return MAGMA_METATILE_NO_WATER + magmaTileNumber;
 }
-
-#define NUM_MAGMA_TILES 16
 
 u16 GetMagmaTileAt(s32 x, s32 y)
 {
@@ -1142,4 +1167,144 @@ void UpdateAdjacentMagmaTiles(s32 x, s32 y, bool32 createdWater)
     magmaTileToCheck = GetMagmaTileAt(x - 1, y); // West tile
     if (magmaTileToCheck < NUM_METATILES_TOTAL)
         MapGridSetMetatileIdAt(x - 1, y, magmaTileToCheck + magmaTileShift[1]); // Change East portion of metatile
+}
+
+u16 GetWaterTileFor(s32 x, s32 y)
+{
+    u8 waterTileNumber = 0;
+
+    // Handle South tile separately, since ledge appears on this tile, not water tile
+    HandleSouthTileLedgeAt(x, y + 1, TRUE);
+
+    // Handle remaining tiles
+    if (!MetatileBehavior_IsDeepOrOceanWater(MapGridGetMetatileBehaviorAt(x, y - 1))
+     && !MetatileBehavior_IsIce(MapGridGetMetatileBehaviorAt(x, y - 1))
+     && GetMagmaTileAt(x, y - 1) == NUM_METATILES_TOTAL) // North tile
+        waterTileNumber += 1;
+    if (!MetatileBehavior_IsDeepOrOceanWater(MapGridGetMetatileBehaviorAt(x + 1, y))
+     && !MetatileBehavior_IsIce(MapGridGetMetatileBehaviorAt(x + 1, y))
+     && GetMagmaTileAt(x + 1, y) == NUM_METATILES_TOTAL) // East tile
+        waterTileNumber += 2;
+    if (!MetatileBehavior_IsDeepOrOceanWater(MapGridGetMetatileBehaviorAt(x - 1, y))
+     && !MetatileBehavior_IsIce(MapGridGetMetatileBehaviorAt(x - 1, y))
+     && GetMagmaTileAt(x - 1, y) == NUM_METATILES_TOTAL) // West tile
+        waterTileNumber += 4;
+
+    // Handle corner water tiles
+    if (waterTileNumber == 0
+     && (IsWaterTileWithLedgeInDirection(x + 1, y, DIR_NORTH)   // East tile is water tile with North ledge
+     || IsWaterTileWithLedgeInDirection(x , y - 1, DIR_EAST)))  // North tile is water tile with East ledge
+        return METATILE_MELTED_ICE_NE_LEDGE;
+    if (waterTileNumber == 0
+     && (IsWaterTileWithLedgeInDirection(x - 1, y, DIR_NORTH)   // West tile is water tile with North ledge
+     || IsWaterTileWithLedgeInDirection(x , y - 1, DIR_WEST)))  // North tile is water tile with West ledge
+        return METATILE_MELTED_ICE_NW_LEDGE;
+    
+    return METATILE_MELTED_ICE_NO_LEDGE + waterTileNumber;
+}
+
+bool32 IsWaterTileWithLedgeInDirection(s32 x, s32 y, enum Direction direction)
+{
+    u16 waterTile = MapGridGetMetatileIdAt(x, y);
+
+    switch (direction)
+    {
+    case DIR_NORTH:
+        if (waterTile == METATILE_MELTED_ICE_NO_LEDGE + 1
+         || waterTile == METATILE_MELTED_ICE_NO_LEDGE + 3
+         || waterTile == METATILE_MELTED_ICE_NO_LEDGE + 5
+         || waterTile == METATILE_MELTED_ICE_NO_LEDGE + 7)
+            return TRUE;
+        break;
+    case DIR_EAST:
+        if (waterTile == METATILE_MELTED_ICE_NO_LEDGE + 2
+         || waterTile == METATILE_MELTED_ICE_NO_LEDGE + 3
+         || waterTile == METATILE_MELTED_ICE_NO_LEDGE + 6
+         || waterTile == METATILE_MELTED_ICE_NO_LEDGE + 7)
+            return TRUE;
+        break;
+    case DIR_WEST:
+        if (waterTile == METATILE_MELTED_ICE_NO_LEDGE + 4
+         || waterTile == METATILE_MELTED_ICE_NO_LEDGE + 5
+         || waterTile == METATILE_MELTED_ICE_NO_LEDGE + 6
+         || waterTile == METATILE_MELTED_ICE_NO_LEDGE + 7)
+            return TRUE;
+        break;
+    default:
+        return FALSE;
+    }
+
+    return FALSE;
+}
+
+u16 GetWaterTileAt(s32 x, s32 y)
+{
+    u16 waterTile = MapGridGetMetatileIdAt(x, y);
+
+    if (waterTile == METATILE_MELTED_ICE_NE_LEDGE || waterTile == METATILE_MELTED_ICE_NW_LEDGE)
+        return waterTile;
+
+    for (u32 i = 0; i < NUM_WATER_TILES; i++)
+    {
+        if (waterTile == METATILE_MELTED_ICE_NO_LEDGE + i)
+            return waterTile;
+    }
+
+    return NUM_METATILES_TOTAL;
+}
+
+bool32 IsWaterTileWithCornerLedge(s32 x, s32 y, bool32 checkNorthEastLedge)
+{
+    if (checkNorthEastLedge)
+    {
+        if (IsWaterTileWithLedgeInDirection(x + 1, y, DIR_NORTH)    // East tile is water tile with North ledge
+         || IsWaterTileWithLedgeInDirection(x , y - 1, DIR_EAST))   // North tile is water tile with East ledge
+            return TRUE;
+        else
+            return FALSE;
+    }
+    else
+    {
+        if (IsWaterTileWithLedgeInDirection(x - 1, y, DIR_NORTH)    // West tile is water tile with North ledge
+         || IsWaterTileWithLedgeInDirection(x , y - 1, DIR_WEST))   // North tile is water tile with West ledge
+            return TRUE;
+        else
+            return FALSE;
+    }
+}
+
+void HandleWaterCornerTilesAt(s32 x, s32 y)
+{
+    u16 waterTile;
+
+    waterTile = GetWaterTileAt(x, y);
+    
+    switch (waterTile)
+    {
+    case METATILE_MELTED_ICE_NO_LEDGE:
+        if (IsWaterTileWithCornerLedge(x, y, TRUE))
+            MapGridSetMetatileIdAt(x, y, METATILE_MELTED_ICE_NE_LEDGE);
+        else if (IsWaterTileWithCornerLedge(x, y, FALSE))
+            MapGridSetMetatileIdAt(x, y, METATILE_MELTED_ICE_NW_LEDGE);
+        break;
+    case METATILE_MELTED_ICE_NE_LEDGE:
+        if (!IsWaterTileWithCornerLedge(x, y, TRUE))
+            MapGridSetMetatileIdAt(x, y, METATILE_MELTED_ICE_NO_LEDGE);
+        break;
+    case METATILE_MELTED_ICE_NW_LEDGE:
+        if (!IsWaterTileWithCornerLedge(x, y, FALSE))
+            MapGridSetMetatileIdAt(x, y, METATILE_MELTED_ICE_NO_LEDGE);
+        break;
+    default:
+        break;
+    }
+}
+
+void UpdateAdjacentWaterTiles(s32 x, s32 y)
+{   
+    HandleWaterCornerTilesAt(x, y - 1); // North tile
+    HandleWaterCornerTilesAt(x + 1, y); // East tile
+    HandleWaterCornerTilesAt(x, y + 1); // South tile
+    HandleWaterCornerTilesAt(x - 1, y); // West tile
+
 }
