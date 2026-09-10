@@ -1,53 +1,66 @@
-# About `pokeemerald-expansion`
+# New Features
 
-![Gif that shows debugging functionality that is unique to pokeemerald-expansion such as rerolling Trainer ID, Cheat Start, PC from Debug Menu, Debug PC Fill, Pokémon Sprite Visualizer, Debug Warp to Map, and Battle Debug Menu](https://github.com/user-attachments/assets/cf9dfbee-4c6b-4bca-8e0a-07f116ef891c) ![Gif that shows overworld functionality that is unique to pokeemerald-expansion such as indoor running, BW2 style map popups, overworld followers, DNA Splicers, Gen 1 style fishing, OW Item descriptions, Quick Run from Battle, Use Last Ball, Wild Double Battles, and Catch from EXP](https://github.com/user-attachments/assets/383af243-0904-4d41-bced-721492fbc48e) ![Gif that shows off a number of modern Pokémon battle mechanics happening in the pokeemerald-expansion engine: 2 vs 1 battles, modern Pokémon, items, moves, abilities, fully customizable opponents and partners, Trainer Slides, and generational gimmicks](https://github.com/user-attachments/assets/50c576bc-415e-4d66-a38f-ad712f3316be)
+1) All boulders now slide when pushed on ice (see FAQ for details on how to only implement this feature).
+<img width="240" height="160" alt="Boulder_Slip" src="https://github.com/user-attachments/assets/7368f7c9-49ed-47a0-a76b-6b67c19f0bf9" />
 
-<!-- If you want to re-record or change these gifs, here are some notes that I used: https://files.catbox.moe/05001g.md -->
+2) Ice boulders: A new boulder type that can be pushed onto water tiles to create walkable ice platforms. Ice boulders automatically slide across the ice platforms they create.
+<img width="240" height="160" alt="Ice_Boulder" src="https://github.com/user-attachments/assets/633f3a33-e449-4c62-935a-c9cfa538291e" />
 
-**`pokeemerald-expansion`** is a GBA ROM hack base that equips developers with a comprehensive toolkit for creating Pokémon ROM hacks. **`pokeemerald-expansion`** is built on top of [pret's `pokeemerald`](https://github.com/pret/pokeemerald) decompilation project. **It is not a playable Pokémon game on its own.**
+3) Magma boulders: Another new boulder type that can be pushed into water tiles to create walkable platforms (“magma platforms”). Magma boulders slide across ice tiles, melting them and leaving water tiles in their place.
+<img width="240" height="160" alt="Magma_Boulder" src="https://github.com/user-attachments/assets/ee6ad1f6-c054-4b73-8988-1b5f22b58c37" />
 
-# [Features](FEATURES.md)
+# Feature Requirements
 
-**`pokeemerald-expansion`** offers hundreds of features from various [core series Pokémon games](https://bulbapedia.bulbagarden.net/wiki/Core_series), along with popular quality-of-life enhancements designed to streamline development and improve the player experience. A full list of those features can be found in [`FEATURES.md`](FEATURES.md).
+## When using any feature
 
-# [Credits](CREDITS.md)
+- 1 flag (not strictly required, but included since it will almost always be used with these features)
 
- [![](https://img.shields.io/github/all-contributors/rh-hideout/pokeemerald-expansion/upcoming)](CREDITS.md)
+## When using ice and magma boulders
 
-If you use **`pokeemerald-expansion`**, please credit **RHH (Rom Hacking Hideout)**. Optionally, include the version number for clarity.
+- 10 8x8 tiles in the Caves secondary tileset
+- Most of the remaining space in the Caves secondary metatiles (in most cases, much of this can be ignored – see FAQ) 
 
-```
-Based off RHH's pokeemerald-expansion 1.17.0 https://github.com/rh-hideout/pokeemerald-expansion/
-```
+# Usage
 
-Please consider [crediting all contributors](CREDITS.md) involved in the project!
+- All boulders use the standard `EventScript_StrengthBoulder` script.
+- Ice boulders use the `OBJ_EVENT_GFX_ICE_BOULDER` sprite, and magma boulders use the `OBJ_EVENT_GFX_MAGMA_BOULDER` sprite.
+- The magma platform sprites can be changed to any of the 5 cave palettes by assigning a different metatile label with the format `METATILE_Cave_Cave#_NoWater`, where # is a number between 1 and 5, to `MAGMA_METATILE_NO_WATER` [here](https://github.com/Jumpstart19/pokeemerald-expansion/blob/a36a8e5fba4631e71477b9ed56820a5b986a2fde/src/fieldmap.c#L1084).
+- In the likely event that you want boulders to remain in their positions while offscreen, set the flag `FLAG_DONT_REMOVE_OFFSCREEN_BOULDER` before pushing any boulders.
 
-# Choosing `pokeemerald` or **`pokeemerald-expansion`**
+# Known Bugs/Limitations
 
-- **`pokeemerald-expansion`** supports multiplayer functionality with other games built on **`pokeemerald-expansion`**. It is not compatible with official Pokémon games.
-- If compatibility with official games is important, use [`pokeemerald`](https://github.com/pret/pokeemerald). Otherwise, we recommend using **`pokeemerald-expansion`**.
-- **`pokeemerald-expansion`** incorporates regular updates from `pokeemerald`, including bug fixes and documentation improvements.
+## Bugs
+- Reflections occasionally show on tiles that are not normally reflective during and after sliding on ice tiles.
 
-# [Getting Started](INSTALL.md)
+## Limitations
+- Currently this branch is only designed to work with deep water tiles (i.e. not lake or puddle water tiles).
+- Generally this is not compatible with sand tiles. While sand tiles with deep water metatile behavior will become ice tiles/magma platforms when the corresponding boulder is pushed onto them, the sand tiles will not revert back to their original state if turned into an ice tile and melted. Magma platforms also do not blend properly with metatiles that have sand metatile behavior but also have visible water in any of their layers.
 
-❗❗ **Important**: Do not use GitHub's "Download Zip" option as it will not include commit history. This is necessary if you want to update or merge other feature branches.
+# FAQ
+## Q: How do I only install the feature where boulders slide on ice?
+A: Copy these two commits: [1](https://github.com/rh-hideout/pokeemerald-expansion/commit/7698cbebebe1e082ccb96364224e9c921a7aef09) and [2](https://github.com/rh-hideout/pokeemerald-expansion/commit/8afda1c9a676d4711b8455a6b2b3c6726b4aae53).
 
-If you're new to git and GitHub, [Team Aqua's Asset Repo](https://github.com/Pawkkie/Team-Aquas-Asset-Repo/) has a [guide to forking and cloning the repository](https://github.com/Pawkkie/Team-Aquas-Asset-Repo/wiki/The-Basics-of-GitHub). Then you can follow one of the following guides:
+## Q: I don't need metatiles for magma platforms for all of the cave palettes. Can I delete these?
+A: Yes! You can safely delete any groups of 16 metatiles that start with a metatile with the label `Cave#_NoWater`, where # is a number between 1 and 5. You can also delete the corresponding metatiles with labels `Cave#_Ledge_N`. Just delete any references to the associated `METATILE_Cave_Cave#_NoWater` and `METATILE_Cave_Cave#_Ledge_N` in the code.
 
-## 📥 [Installing **`pokeemerald-expansion`**](INSTALL.md)
-## 🏗️ [Building **`pokeemerald-expansion`**](INSTALL.md#Building-pokeemerald-expansion)
-## 🚚 [Migrating from **`pokeemerald`**](INSTALL.md#Migrating-from-pokeemerald)
-## 🚀 [Updating **`pokeemerald-expansion`**](INSTALL.md#Updating-pokeemerald-expansion)
+## Q: How can I implement this feature branch while using custom graphics?
+A:
+For ice and magma boulder sprites:
+- Update `graphics/object_events/pics/misc/ice_boulder.png` and `graphics/object_events/pics/misc/magma_boulder.png`, as well as `graphics/object_events/palettes/ice_magma_boulder.pal`. It is strongly recommended to use the same palette for the two new boulders to avoid any palette errors.
 
-# [Documentation](https://rh-hideout.github.io/pokeemerald-expansion/)
+For ice platforms formed by ice boulders:
+- Create a new metatile and give it the metatile label `Ice_Platform`. Delete/replace the existing `Ice_Platform` label at metatile `0x39E` in the Caves secondary metatiles.
 
-For detailed documentation, visit the [pokeemerald-expansion documentation page](https://rh-hideout.github.io/pokeemerald-expansion/).
+For magma platforms created by magma boulders:
+- Create a new set of 16 metatiles following the example of metatiles starting with `0x39F` (metatile label `Cave1_NoWater`) in the Caves secondary metatiles. The absolute position of these metatiles does not matter, but **the added metatiles must be in the same sequential order as in the 5 provided examples.** That is, the metatiles must be designed with water on the same sides as in the examples (the first metatile has no visible water, the second has water on the north edge, the third has water on the east edge, etc.). For ease of implementation, give the first metatile in this sequence the metatile label `Cave1_NoWater`.
 
-# [Contributions](CONTRIBUTING.md)
-If you are looking to [report a bug](CONTRIBUTING.md#Bug-Report), [open a pull request](CONTRIBUTING.md#Pull-Requests), or [request a feature](CONTRIBUTING.md#Feature-Request), our [`CONTRIBUTING.md`](CONTRIBUTING.md) has guides for each.
+For water ledges created by melting ice platforms:
+- Similar to the above process, create a new set of 8 metatiles following the example of metatiles starting with `0x3EF` (metatile label `Water`) in the Caves secondary metatiles. Again, following the same sequential order as the example with vanilla graphics is critical. Give the first metatile in this sequence the metatile label `Water`.
 
-# [Community](https://discord.gg/6CzjAG6GZk)
+Also, create new metatiles for the ledges in the range `0x3F7`-`0x3F9`, giving these new tiles the same metatile labels as the metatiles that were replaced (`Water_Ledge_NE`, `Water_Ledge_NW`, and `Cave1_Ledge_N`, respectively).
 
-[![](https://dcbadge.limes.pink/api/server/6CzjAG6GZk)](https://discord.gg/6CzjAG6GZk)
+## Q: How do I change the animation that plays when a magma boulder creates a platform in water?
+A: Change the field effect that is called [here](https://github.com/Jumpstart19/pokeemerald-expansion/blob/a36a8e5fba4631e71477b9ed56820a5b986a2fde/src/field_control_avatar.c#L1452).
 
-Our community uses the [ROM Hacking Hideout (RHH) Discord server](https://discord.gg/6CzjAG6GZk) to communicate and organize. Most of our discussions take place there, and we welcome anybody to join us!
+# Questions/Bug Reports
+Please ping @Jumpstart in the Team Aqua's Hideout discord server.
