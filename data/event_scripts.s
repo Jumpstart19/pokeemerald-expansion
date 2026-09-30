@@ -65,6 +65,7 @@
 #include "constants/songs.h"
 #include "constants/sound.h"
 #include "constants/species.h"
+#include "constants/text_blips.h"
 #include "constants/trade.h"
 #include "constants/trainer_hill.h"
 #include "constants/trainer_tower.h"
@@ -1738,3 +1739,7 @@ EventScript_PalletTown_PlayersHouse_2F_TurnOnPC::
 	.include "data/scripts/battle_frontier.inc"
 	.include "data/scripts/apricorn_tree.inc"
 	.include "data/scripts/wild_encounter.inc"
+
+	.include "data/maps/TEST_BOULDER_PROPERTIES/scripts.inc"
+
+	.include "data/maps/Test_Text_Blips/scripts.inc"

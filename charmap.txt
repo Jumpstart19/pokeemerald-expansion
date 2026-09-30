@@ -465,6 +465,37 @@ SPEAKER = FC 19
 ACCENT = FC 1A @ same as FC 01. sets accent color
 BACKGROUND = FC 1B @ same as FC 01. sets background color
 TEXT_COLORS = FC 1C @ takes 3 colors: text base color, shadow and accent
+SET_TEXT_BLIP = FC 1D @ takes text blip ID listed below. sets text blip parameters
+STOP_TEXT_BLIP = FC 1E
+
+@ text blip IDs
+PHENOME_DEFAULT = 00
+PHENOME_HIGH_1 = 01
+PHENOME_HIGH_2 = 02
+PHENOME_HIGH_3 = 03
+PHENOME_HIGH_4 = 04
+PHENOME_HIGH_5 = 05
+PHENOME_LOW_1 = 06
+PHENOME_LOW_2 = 07
+PHENOME_LOW_3 = 08
+PHENOME_LOW_4 = 09
+TEXT_PRINTER_1 = 0A
+TEXT_PRINTER_2 = 0B
+TEXT_PRINTER_3 = 0C
+TEXT_PRINTER_4 = 0D
+TEXT_PRINTER_5 = 0E
+TEXT_PRINTER_6 = 0F
+SPOOKY = 10
+ROBO_1 = 11
+ROBO_2 = 12
+ROBO_3 = 13
+ROBO_4 = 14
+VOICE_1 = 15
+VOICE_2 = 16
+VOICE_3 = 17
+VOICE_4 = 18
+VOICE_5 = 19
+VOICE_6 = 1A
 
 @ Speaker names, the order must be matching with include/constants/speaker_names.h
 NAME_NONE = 00
@@ -780,6 +811,7 @@ SE_ARENA_TIMEUP2 = 0A 01
 SE_PIKE_CURTAIN_CLOSE = 0B 01
 SE_PIKE_CURTAIN_OPEN = 0C 01
 SE_SUDOWOODO_SHAKE = 0D 01
+SE_TEXT_BLIP_TEMPLATE = 0E 01
 MUS_LITTLEROOT_TEST = 5E 01
 MUS_GSC_ROUTE38 = 5F 01
 MUS_CAUGHT = 60 01

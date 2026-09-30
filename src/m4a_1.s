@@ -936,6 +936,19 @@ ply_tempo:
 ply_keysh:
 	mov r12, lr
 	bl ld_r3_tp_adr_i
+	@ begin text blip pitch replacement
+	ldr r2, =gTextBlipMusicPlayerPtr
+	ldr r2, [r2]
+	cmp r0, r2
+	bne _skip_custom_pitch
+	ldr r2, =gTextBlipPitchShift
+	ldrb r2, [r2]
+	cmp r2, #0
+	beq _skip_custom_pitch
+	ldr r2, =gTextBlipPitchShift
+	ldrb r3, [r2]
+_skip_custom_pitch:
+	@ end text blip pitch replacement
 	strb r3, [r1, o_MusicPlayerTrack_keyShift]
 	ldrb r3, [r1, o_MusicPlayerTrack_flags]
 	movs r2, 0xC
@@ -955,6 +968,19 @@ ply_voice:
 	adds r2, r3
 	lsls r2, 2
 	ldr r3, [r0, o_MusicPlayerInfo_tone]
+	@ begin text blip voice replacement
+	ldr r4, =gTextBlipMusicPlayerPtr
+	ldr r4, [r4]
+	cmp r0, r4
+	bne _skip_custom_voice
+	ldr r4, =gTextBlipVoice
+	ldrh r4, [r4]
+	subs r4, #1
+	blt _skip_custom_voice
+	adds r3, r4
+	movs r2, #0
+_skip_custom_voice:
+	@ end text blip voice replacement
 	adds r2, r3
 	ldr r3, [r2, o_ToneData_type]
 	bl chk_adr_r2
@@ -972,6 +998,19 @@ ply_voice:
 ply_vol:
 	mov r12, lr
 	bl ld_r3_tp_adr_i
+	@ begin text blip volume replacement
+	ldr r2, =gTextBlipMusicPlayerPtr
+	ldr r2, [r2]
+	cmp r0, r2
+	bne _skip_custom_vol
+	ldr r2, =gTextBlipVolume
+	ldrb r2, [r2]
+	cmp r2, #0
+	beq _skip_custom_vol
+	ldr r2, =gTextBlipVolume
+	ldrb r3, [r2]
+_skip_custom_vol:
+	@ end text blip volume replacement
 	strb r3, [r1, o_MusicPlayerTrack_vol]
 	ldrb r3, [r1, o_MusicPlayerTrack_flags]
 	movs r2, MPT_FLG_VOLCHG

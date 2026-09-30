@@ -706,6 +706,8 @@ u8 GetExtCtrlCodeLength(u8 code)
         [EXT_CTRL_CODE_ACCENT]                 = 2,
         [EXT_CTRL_CODE_BACKGROUND]             = 2,
         [EXT_CTRL_CODE_TEXT_COLORS]            = 4,
+        [EXT_CTRL_CODE_SET_TEXT_BLIP]          = 2,
+        [EXT_CTRL_CODE_STOP_TEXT_BLIP]         = 1,
     };
 
     u8 length = 0;

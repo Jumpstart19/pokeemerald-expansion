@@ -14,9 +14,11 @@
 #include "sprite.h"
 #include "string_util.h"
 #include "text.h"
+#include "text_blips.h"
 #include "window.h"
 #include "constants/songs.h"
 #include "constants/speaker_names.h"
+#include "constants/text_blips.h"
 
 static u16 RenderText(struct TextPrinter *);
 static u32 RenderFont(struct TextPrinter *);
@@ -1254,6 +1256,8 @@ void SetResultWithButtonPress(bool32 *result)
 {
     if (JOY_NEW(A_BUTTON | B_BUTTON))
     {
+        if (gTextBlipActive)
+            ResetDefaultValuesLastClip();
         *result = TRUE;
         PlaySE(SE_SELECT);
     }
@@ -1536,11 +1540,21 @@ static u16 RenderText(struct TextPrinter *textPrinter)
 
                     return RENDER_REPEAT;
                 }
+            case EXT_CTRL_CODE_SET_TEXT_BLIP:
+                currChar = *textPrinter->printerTemplate.currentChar;
+                textPrinter->printerTemplate.currentChar++;
+                InitTextBlip(currChar);
+                textPrinter->state = RENDER_STATE_WAIT_SE;
+                return RENDER_REPEAT;
+            case EXT_CTRL_CODE_STOP_TEXT_BLIP:
+                ResetTextBlips();
+                return RENDER_REPEAT;
             }
             break;
         case CHAR_PROMPT_CLEAR:
             textPrinter->state = RENDER_STATE_CLEAR;
             TextPrinterInitDownArrowCounters(textPrinter);
+            ResetTextBlipChars();
             return RENDER_UPDATE;
         case CHAR_PROMPT_SCROLL:
             textPrinter->state = RENDER_STATE_SCROLL_START;
@@ -1578,6 +1592,7 @@ static u16 RenderText(struct TextPrinter *textPrinter)
             }
         case EOS:
             textPrinter->isInUse = FALSE;
+            ResetTextBlips();
             return RENDER_FINISH;
         }
 
@@ -1619,6 +1634,14 @@ static u16 RenderText(struct TextPrinter *textPrinter)
 
         PrintGlyph(textPrinter);
 
+        if (gTextBlipActive && !IsPlayerTextSpeedInstant())
+            TryPlayTextBlip(currChar, textPrinter->hasPrintBeenSpedUp);
+        else if (gTextBlipSetActive && !IsPlayerTextSpeedInstant())
+        {
+            InitTextBlip(DEFAULT_TEXT_BLIP);
+            TryPlayTextBlip(currChar, textPrinter->hasPrintBeenSpedUp);
+        }
+        
         return RENDER_PRINT;
     case RENDER_STATE_WAIT:
         if (TextPrinterWait(textPrinter))
@@ -1630,7 +1653,10 @@ static u16 RenderText(struct TextPrinter *textPrinter)
             FillWindowPixelBuffer(textPrinter->printerTemplate.windowId, PIXEL_FILL(textPrinter->printerTemplate.color.background));
             textPrinter->printerTemplate.currentX = textPrinter->printerTemplate.x;
             textPrinter->printerTemplate.currentY = textPrinter->printerTemplate.y;
-            textPrinter->state = RENDER_STATE_HANDLE_CHAR;
+            if (!gTextBlipActive)
+                textPrinter->state = RENDER_STATE_HANDLE_CHAR;
+            else
+                textPrinter->state = RENDER_STATE_WAIT_SE;
         }
         return RENDER_UPDATE;
     case RENDER_STATE_SCROLL_START:
@@ -1640,7 +1666,10 @@ static u16 RenderText(struct TextPrinter *textPrinter)
             TextPrinterClearDownArrow(textPrinter);
             textPrinter->scrollDistance = gFonts[textPrinter->printerTemplate.fontId].maxLetterHeight + textPrinter->printerTemplate.lineSpacing;
             textPrinter->printerTemplate.currentX = textPrinter->printerTemplate.x;
-            textPrinter->state = RENDER_STATE_SCROLL;
+            if (!gTextBlipActive)
+                textPrinter->state = RENDER_STATE_SCROLL;
+            else
+                textPrinter->state = RENDER_STATE_WAIT_SE_THEN_SCROLL;
         }
         return RENDER_UPDATE;
     case RENDER_STATE_SCROLL:
@@ -1682,6 +1711,10 @@ static u16 RenderText(struct TextPrinter *textPrinter)
         if (!IsSEPlaying())
             textPrinter->state = RENDER_STATE_HANDLE_CHAR;
         return RENDER_UPDATE;
+    case RENDER_STATE_WAIT_SE_THEN_SCROLL:
+        if (!IsSEPlaying())
+            textPrinter->state = RENDER_STATE_SCROLL;
+        return RENDER_UPDATE;
     case RENDER_STATE_PAUSE:
         if (textPrinter->delayCounter != 0)
             textPrinter->delayCounter--;
@@ -1691,6 +1724,7 @@ static u16 RenderText(struct TextPrinter *textPrinter)
     }
 
     textPrinter->isInUse = FALSE;
+    ResetTextBlips();
     return RENDER_FINISH;
 }
 
