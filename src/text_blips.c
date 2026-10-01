@@ -160,7 +160,7 @@ static const struct TextBlipAudioValues sTextBlipAudioValues[] = {
     [PHENOME_HIGH_5] =
     {
         .clips = sPhenomeAudioClips,
-        .numClips =  ARRAY_COUNT(sPhenomeAudioClips),
+        .numClips = ARRAY_COUNT(sPhenomeAudioClips),
         .equalWeights = TRUE,
         .tempoAdjust = TEMPO_PHENOMES,
         .volume = VOLUME_DEFAULT,
@@ -173,7 +173,7 @@ static const struct TextBlipAudioValues sTextBlipAudioValues[] = {
     [PHENOME_HIGH_4] =
     {
         .clips = sPhenomeAudioClips,
-        .numClips =  ARRAY_COUNT(sPhenomeAudioClips),
+        .numClips = ARRAY_COUNT(sPhenomeAudioClips),
         .equalWeights = TRUE,
         .tempoAdjust = TEMPO_PHENOMES,
         .volume = VOLUME_DEFAULT,
@@ -186,7 +186,7 @@ static const struct TextBlipAudioValues sTextBlipAudioValues[] = {
     [PHENOME_HIGH_3] =
     {
         .clips = sPhenomeAudioClips,
-        .numClips =  ARRAY_COUNT(sPhenomeAudioClips),
+        .numClips = ARRAY_COUNT(sPhenomeAudioClips),
         .equalWeights = TRUE,
         .tempoAdjust = TEMPO_PHENOMES,
         .volume = VOLUME_DEFAULT,
@@ -199,7 +199,7 @@ static const struct TextBlipAudioValues sTextBlipAudioValues[] = {
     [PHENOME_HIGH_2] =
     {
         .clips = sPhenomeAudioClips,
-        .numClips =  ARRAY_COUNT(sPhenomeAudioClips),
+        .numClips = ARRAY_COUNT(sPhenomeAudioClips),
         .equalWeights = TRUE,
         .tempoAdjust = TEMPO_PHENOMES,
         .volume = VOLUME_DEFAULT,
@@ -212,7 +212,7 @@ static const struct TextBlipAudioValues sTextBlipAudioValues[] = {
     [PHENOME_HIGH_1] =
     {
         .clips = sPhenomeAudioClips,
-        .numClips =  ARRAY_COUNT(sPhenomeAudioClips),
+        .numClips = ARRAY_COUNT(sPhenomeAudioClips),
         .equalWeights = TRUE,
         .tempoAdjust = TEMPO_PHENOMES,
         .volume = VOLUME_DEFAULT,
@@ -225,7 +225,7 @@ static const struct TextBlipAudioValues sTextBlipAudioValues[] = {
     [PHENOME_DEFAULT] =
     {
         .clips = sPhenomeAudioClips,
-        .numClips =  ARRAY_COUNT(sPhenomeAudioClips),
+        .numClips = ARRAY_COUNT(sPhenomeAudioClips),
         .equalWeights = TRUE,
         .tempoAdjust = TEMPO_PHENOMES,
         .volume = VOLUME_DEFAULT,
@@ -238,7 +238,7 @@ static const struct TextBlipAudioValues sTextBlipAudioValues[] = {
     [PHENOME_LOW_1] =
     {
         .clips = sPhenomeAudioClips,
-        .numClips =  ARRAY_COUNT(sPhenomeAudioClips),
+        .numClips = ARRAY_COUNT(sPhenomeAudioClips),
         .equalWeights = TRUE,
         .tempoAdjust = TEMPO_PHENOMES,
         .volume = VOLUME_DEFAULT,
@@ -251,7 +251,7 @@ static const struct TextBlipAudioValues sTextBlipAudioValues[] = {
     [PHENOME_LOW_2] =
     {
         .clips = sPhenomeAudioClips,
-        .numClips =  ARRAY_COUNT(sPhenomeAudioClips),
+        .numClips = ARRAY_COUNT(sPhenomeAudioClips),
         .equalWeights = TRUE,
         .tempoAdjust = TEMPO_PHENOMES,
         .volume = VOLUME_DEFAULT,
@@ -264,7 +264,7 @@ static const struct TextBlipAudioValues sTextBlipAudioValues[] = {
     [PHENOME_LOW_3] =
     {
         .clips = sPhenomeAudioClips,
-        .numClips =  ARRAY_COUNT(sPhenomeAudioClips),
+        .numClips = ARRAY_COUNT(sPhenomeAudioClips),
         .equalWeights = TRUE,
         .tempoAdjust = TEMPO_PHENOMES,
         .volume = VOLUME_DEFAULT,
@@ -277,7 +277,7 @@ static const struct TextBlipAudioValues sTextBlipAudioValues[] = {
     [PHENOME_LOW_4] =
     {
         .clips = sPhenomeAudioClips,
-        .numClips =  ARRAY_COUNT(sPhenomeAudioClips),
+        .numClips = ARRAY_COUNT(sPhenomeAudioClips),
         .equalWeights = TRUE,
         .tempoAdjust = TEMPO_PHENOMES,
         .volume = VOLUME_DEFAULT,
@@ -290,7 +290,7 @@ static const struct TextBlipAudioValues sTextBlipAudioValues[] = {
     [TEXT_PRINTER_1] =
     {
         .clips = sTextPrinter1AudioClips,
-        .numClips =  ARRAY_COUNT(sTextPrinter1AudioClips),
+        .numClips = ARRAY_COUNT(sTextPrinter1AudioClips),
         .equalWeights = TRUE,
         .tempoAdjust = TEMPO_DEFAULT,
         .volume = VOLUME_DEFAULT,
@@ -303,7 +303,7 @@ static const struct TextBlipAudioValues sTextBlipAudioValues[] = {
     [TEXT_PRINTER_2] =
     {
         .clips = sTextPrinter2AudioClips,
-        .numClips =  ARRAY_COUNT(sTextPrinter2AudioClips),
+        .numClips = ARRAY_COUNT(sTextPrinter2AudioClips),
         .equalWeights = TRUE,
         .tempoAdjust = TEMPO_DEFAULT,
         .volume = 70,
@@ -316,7 +316,7 @@ static const struct TextBlipAudioValues sTextBlipAudioValues[] = {
     [TEXT_PRINTER_3] =
     {
         .clips = sTextPrinter3AudioClips,
-        .numClips =  ARRAY_COUNT(sTextPrinter3AudioClips),
+        .numClips = ARRAY_COUNT(sTextPrinter3AudioClips),
         .equalWeights = TRUE,
         .tempoAdjust = TEMPO_DEFAULT,
         .volume = 50,
@@ -329,7 +329,7 @@ static const struct TextBlipAudioValues sTextBlipAudioValues[] = {
     [TEXT_PRINTER_4] =
     {
         .clips = sTextPrinter4AudioClips,
-        .numClips =  ARRAY_COUNT(sTextPrinter4AudioClips),
+        .numClips = ARRAY_COUNT(sTextPrinter4AudioClips),
         .equalWeights = TRUE,
         .tempoAdjust = TEMPO_DEFAULT,
         .volume = 80,
@@ -342,7 +342,7 @@ static const struct TextBlipAudioValues sTextBlipAudioValues[] = {
     [TEXT_PRINTER_5] =
     {
         .clips = sTextPrinter5AudioClips,
-        .numClips =  ARRAY_COUNT(sTextPrinter5AudioClips),
+        .numClips = ARRAY_COUNT(sTextPrinter5AudioClips),
         .equalWeights = TRUE,
         .tempoAdjust = TEMPO_DEFAULT,
         .volume = 127,
@@ -355,7 +355,7 @@ static const struct TextBlipAudioValues sTextBlipAudioValues[] = {
     [TEXT_PRINTER_6] =
     {
         .clips = sTextPrinter6AudioClips,
-        .numClips =  ARRAY_COUNT(sTextPrinter6AudioClips),
+        .numClips = ARRAY_COUNT(sTextPrinter6AudioClips),
         .equalWeights = TRUE,
         .tempoAdjust = TEMPO_DEFAULT,
         .volume = VOLUME_DEFAULT,
@@ -368,7 +368,7 @@ static const struct TextBlipAudioValues sTextBlipAudioValues[] = {
     [SPOOKY] =
     {
         .clips = sSpookyAudioClips,
-        .numClips =  ARRAY_COUNT(sSpookyAudioClips),
+        .numClips = ARRAY_COUNT(sSpookyAudioClips),
         .equalWeights = TRUE,
         .tempoAdjust = TEMPO_DEFAULT,
         .volume = VOLUME_DEFAULT,
@@ -381,7 +381,7 @@ static const struct TextBlipAudioValues sTextBlipAudioValues[] = {
     [ROBO_1] =
     {
         .clips = sRobo1Clips,
-        .numClips =  ARRAY_COUNT(sRobo1Clips),
+        .numClips = ARRAY_COUNT(sRobo1Clips),
         .equalWeights = TRUE,
         .tempoAdjust = TEMPO_DEFAULT,
         .volume = VOLUME_DEFAULT,
@@ -394,7 +394,7 @@ static const struct TextBlipAudioValues sTextBlipAudioValues[] = {
     [ROBO_2] =
     {
         .clips = sRobo2Clips,
-        .numClips =  ARRAY_COUNT(sRobo2Clips),
+        .numClips = ARRAY_COUNT(sRobo2Clips),
         .equalWeights = TRUE,
         .tempoAdjust = TEMPO_DEFAULT,
         .volume = VOLUME_DEFAULT,
@@ -407,7 +407,7 @@ static const struct TextBlipAudioValues sTextBlipAudioValues[] = {
     [ROBO_3] =
     {
         .clips = sRobo3Clips,
-        .numClips =  ARRAY_COUNT(sRobo3Clips),
+        .numClips = ARRAY_COUNT(sRobo3Clips),
         .equalWeights = TRUE,
         .tempoAdjust = TEMPO_DEFAULT,
         .volume = VOLUME_DEFAULT,
@@ -420,7 +420,7 @@ static const struct TextBlipAudioValues sTextBlipAudioValues[] = {
     [ROBO_4] =
     {
         .clips = sRobo4Clips,
-        .numClips =  ARRAY_COUNT(sRobo4Clips),
+        .numClips = ARRAY_COUNT(sRobo4Clips),
         .equalWeights = TRUE,
         .tempoAdjust = TEMPO_DEFAULT,
         .volume = VOLUME_DEFAULT,
@@ -433,7 +433,7 @@ static const struct TextBlipAudioValues sTextBlipAudioValues[] = {
     [VOICE_1] =
     {
         .clips = sVoice1Clips,
-        .numClips =  ARRAY_COUNT(sVoice1Clips),
+        .numClips = ARRAY_COUNT(sVoice1Clips),
         .equalWeights = TRUE,
         .tempoAdjust = TEMPO_PHENOMES,
         .volume = VOLUME_DEFAULT,
@@ -446,7 +446,7 @@ static const struct TextBlipAudioValues sTextBlipAudioValues[] = {
     [VOICE_2] =
     {
         .clips = sVoice2Clips,
-        .numClips =  ARRAY_COUNT(sVoice2Clips),
+        .numClips = ARRAY_COUNT(sVoice2Clips),
         .equalWeights = TRUE,
         .tempoAdjust = TEMPO_PHENOMES,
         .volume = VOLUME_DEFAULT,
@@ -459,7 +459,7 @@ static const struct TextBlipAudioValues sTextBlipAudioValues[] = {
     [VOICE_3] =
     {
         .clips = sVoice3Clips,
-        .numClips =  ARRAY_COUNT(sVoice3Clips),
+        .numClips = ARRAY_COUNT(sVoice3Clips),
         .equalWeights = TRUE,
         .tempoAdjust = TEMPO_PHENOMES,
         .volume = VOLUME_DEFAULT,
@@ -472,7 +472,7 @@ static const struct TextBlipAudioValues sTextBlipAudioValues[] = {
     [VOICE_4] =
     {
         .clips = sVoice4Clips,
-        .numClips =  ARRAY_COUNT(sVoice4Clips),
+        .numClips = ARRAY_COUNT(sVoice4Clips),
         .equalWeights = TRUE,
         .tempoAdjust = TEMPO_PHENOMES,
         .volume = VOLUME_DEFAULT,
@@ -485,7 +485,7 @@ static const struct TextBlipAudioValues sTextBlipAudioValues[] = {
     [VOICE_5] =
     {
         .clips = sVoice5Clips,
-        .numClips =  ARRAY_COUNT(sVoice5Clips),
+        .numClips = ARRAY_COUNT(sVoice5Clips),
         .equalWeights = TRUE,
         .tempoAdjust = TEMPO_PHENOMES,
         .volume = VOLUME_DEFAULT,
@@ -498,7 +498,7 @@ static const struct TextBlipAudioValues sTextBlipAudioValues[] = {
     [VOICE_6] =
     {
         .clips = sVoice6Clips,
-        .numClips =  ARRAY_COUNT(sVoice6Clips),
+        .numClips = ARRAY_COUNT(sVoice6Clips),
         .equalWeights = TRUE,
         .tempoAdjust = TEMPO_PHENOMES,
         .volume = VOLUME_DEFAULT,
