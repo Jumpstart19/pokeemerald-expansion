@@ -29,10 +29,6 @@
 
 #define MAX_VARIANCE_SEGMENTS 10 // Ensures full variance in volume/pitch can be heard when MAKE_TEXT_BLIPS_PREDICTABLE is TRUE
 
-// From sound/MPlayDef.s
-#define END_OF_TRACK_MARKER 0xB1
-#define VOICE_MARKER        0xBD
-
 // The IDs of the audio settings for each text blip in sTextBlipAudioValues.
 // Also add to charmap.txt.
 #define PHENOME_DEFAULT 0
